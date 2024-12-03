@@ -1,0 +1,81 @@
+from graphviz import Digraph
+import random
+
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+class BinaryTree:
+    def __init__(self):
+        self.root = None
+    
+    def insert(self, value):
+        if not self.root:
+            self.root = Node(value)
+        else:
+            self._insert_recursive(self.root, value)
+    
+    def _insert_recursive(self, node, value):
+        if value < node.value:
+            if node.left is None:
+                node.left = Node(value)
+            else:
+                self._insert_recursive(node.left, value)
+        else:
+            if node.right is None:
+                node.right = Node(value)
+            else:
+                self._insert_recursive(node.right, value)
+    
+    def visualize(self, filename='binary_tree'):
+        """
+        Create a visualization of the binary tree using graphviz
+        """
+        dot = Digraph(comment='Binary Tree')
+        dot.attr(rankdir='TB')  # Top to Bottom direction
+        
+        def add_nodes_edges(node, dot):
+            if node:
+                # Add node
+                dot.node(str(id(node)), str(node.value))
+                
+                # Add left child and edge
+                if node.left:
+                    dot.node(str(id(node.left)), str(node.left.value))
+                    dot.edge(str(id(node)), str(id(node.left)))
+                    add_nodes_edges(node.left, dot)
+                
+                # Add right child and edge
+                if node.right:
+                    dot.node(str(id(node.right)), str(node.right.value))
+                    dot.edge(str(id(node)), str(id(node.right)))
+                    add_nodes_edges(node.right, dot)
+        
+        # Start the visualization from root
+        add_nodes_edges(self.root, dot)
+        
+        # Save the visualization
+        dot.render(filename, view=True, format='png')
+
+# Create and visualize tree for the name "rhusel"
+def create_name_tree(name):
+    # Create tree
+    tree = BinaryTree()
+    
+    # Get unique letters and sort them
+    unique_letters = sorted(set(name.lower()))
+    
+    # Insert letters into tree
+    for letter in unique_letters:
+        tree.insert(letter)
+    
+    # Visualize the tree
+    tree.visualize(f"{name}_tree")
+    
+    return tree
+
+# Example usage
+name = "rhusel"
+tree = create_name_tree(name)
